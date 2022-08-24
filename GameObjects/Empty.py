@@ -1,9 +1,7 @@
 from GameObjects.GameObject import GameObject
+from typing import Optional
 
 class Empty(GameObject):
     
     def __init__(self) -> None:
-        super().__init__()
-        self.tile = ord('_')
-        self.bg = (0, 0, 0, 1)
-        self.fg = (1, 1, 1, 1)
+        super().__init__(False, '.')

@@ -1,44 +1,43 @@
 #!/usr/bin/env python3
-# Make sure 'dejavu10x10_gs_tc.png' is in the same directory as this script.
-import tcod
+
+from typing import Optional, Any
+
+from tcod.tileset import load_tilesheet, Tileset, CHARMAP_CP437
+from tcod.event import wait, Quit
+from tcod import Console
+from tcod.context import Context, new as new_context
+
 from Game import Game
+from EventHandler.EventHandler import EventHandler
 
 def main() -> None:
 
-    WIDTH, HEIGHT = 45, 45  # Console width and height in tiles.
+    WIDTH, HEIGHT = 45, 45
 
-    """Script entry point."""
-    # Load the font, a 32 by 8 tile font with libtcod's old character layout.
-    tileset = tcod.tileset.load_tilesheet(
-        "Alloy_curses_12x12.png", 16, 16, tcod.tileset.CHARMAP_CP437,
+    tileset: Tileset = load_tilesheet(
+        "Alloy_curses_12x12.png", 16, 16, CHARMAP_CP437,
     )
-    # Create the main console.
-    console = tcod.Console(WIDTH, HEIGHT, order="F")
 
-    # Create game object
-    game = Game(WIDTH, HEIGHT, console)
+    game = Game(WIDTH, HEIGHT)
 
-    # Create a window based on this console and tileset.
-    with tcod.context.new(  # New window for a console of size columns×rows.
-        columns=console.width, rows=console.height, tileset=tileset
+    with new_context(
+        columns=WIDTH,
+        rows=HEIGHT,
+        tileset=tileset
     ) as context:
-        while True:  # Main loop, runs until SystemExit is raised.
+        while True:
             
             game.draw()
 
-            console.clear()
+            context.present(game.console)
 
-            context.present(game.console)  # Show the console.
+            for event in wait():
+                context.convert_event(event)
 
-            # This event loop will wait until at least one event is processed before exiting.
-            # For a non-blocking event loop replace `tcod.event.wait` with `tcod.event.get`.
-            for event in tcod.event.wait():
-                context.convert_event(event)  # Sets tile coordinates for mouse events.
-                print(event)  # Print event names and attributes.
-                if isinstance(event, tcod.event.Quit):
-                    raise SystemExit()
-        # The window will be closed after the above with-block exits.
+                print(event)
 
+                action: Optional[Any] = game.eventHandler.dispatch(event)
+                game.actionHandler.apply(action)
 
 if __name__ == "__main__":
     main()
