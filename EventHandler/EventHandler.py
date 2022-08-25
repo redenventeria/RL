@@ -4,7 +4,7 @@ from tcod.event import (
     K_UP, K_DOWN, K_LEFT, K_RIGHT
 )
 
-from EventHandler.Actions import (
+from ActionHandler import (
     Action, MovementAction, EscapeAction
 )
 

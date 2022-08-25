@@ -1,5 +1,4 @@
-from GameObjects.GameObject import GameObject
-from typing import Optional
+from GameObjects import GameObject
 
 class Empty(GameObject):
     
