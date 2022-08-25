@@ -1,11 +1,10 @@
 import random
 from tcod.console import Console
-import numpy
-from EventHandler.EventHandler import EventHandler
-from ActionHandler.ActionHandler import ActionHandler
-from GameObjects.Empty import Empty
-from GameObjects.GameObject import GameObject
-from GameObjects.Wall import Wall
+from event_handler import EventHandler
+from action_handler import ActionHandler
+from game_object import Empty
+from game_object import GameObject
+from game_object import Wall
 
 class Game():
     def __init__(self, width: int, height: int) -> None:

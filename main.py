@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
 from typing import Optional, Any
-
 from tcod.tileset import load_tilesheet, Tileset, CHARMAP_CP437
 from tcod.event import wait, Quit
 from tcod import Console
 from tcod.context import Context, new as new_context
 
-from Game import Game
-from EventHandler.EventHandler import EventHandler
+from game import Game
 
 def main() -> None:
 
