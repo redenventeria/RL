@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
 
 from typing import Optional, Any
-from tcod.tileset import load_tilesheet, Tileset, CHARMAP_CP437
-from tcod.event import wait, Quit
-from tcod import Console
-from tcod.context import Context, new as new_context
 
-from game import Game
+from tcod.tileset import load_tilesheet, Tileset, CHARMAP_CP437
+from tcod.event import wait
+from tcod import Console
+from tcod.context import new as new_context
+
+from engine import Engine
 
 def main() -> None:
 
-    WIDTH, HEIGHT = 45, 45
+    WIDTH, HEIGHT = 60, 45
 
     tileset: Tileset = load_tilesheet(
-        "Alloy_curses_12x12.png", 16, 16, CHARMAP_CP437,
+        "resources/Alloy_curses_12x12.png", 16, 16, CHARMAP_CP437,
     )
 
-    game = Game(WIDTH, HEIGHT)
+    engine = Engine(Console(WIDTH, HEIGHT))
 
     with new_context(
         columns=WIDTH,
@@ -25,17 +26,15 @@ def main() -> None:
     ) as context:
         while True:
             
-            game.draw()
+            engine.draw()
 
-            context.present(game.console)
+            context.present(engine.console)
 
             for event in wait():
                 context.convert_event(event)
-
                 print(event)
-
-                action: Optional[Any] = game.eventHandler.dispatch(event)
-                game.actionHandler.apply(action)
+                action: Optional[Any] = engine.eventHandler.dispatch(event)
+                engine.actionHandler.apply(action)
 
 if __name__ == "__main__":
     main()

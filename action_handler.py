@@ -1,4 +1,9 @@
 
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from engine import Engine
 
 
 class Action:
@@ -14,13 +19,16 @@ class MovementAction(Action):
         self.dx: int = dx
         self.dy: int = dy
     
-    def apply(self, game):
-        new_x = game.player_x + self.dx
-        new_y = game.player_y + self.dy
-        if not game.level[new_x][new_y].is_solid:
-            game.player_x = new_x
-            game.player_y = new_y
-
+    def apply(self, engine: "Engine"):
+        new_x = engine.player.x + self.dx
+        new_y = engine.player.y + self.dy
+        if self.__isCellExists(new_x, new_y, engine):
+            if not engine.current_level.navGrid[new_x][new_y].is_solid:
+                engine.player.x = new_x
+                engine.player.y = new_y
+    
+    def __isCellExists(self, new_x, new_y, engine: "Engine"):
+        return 0 <= new_x < engine.width and 0 <= new_y < engine.height
 
 
 class EscapeAction(Action):
@@ -28,7 +36,7 @@ class EscapeAction(Action):
     def __init__(self) -> None:
         super().__init__()
     
-    def apply(self, game):
+    def apply(self, engine: "Engine"):
         raise SystemExit()
 
 
