@@ -22,6 +22,7 @@ class Engine():
         self.console.clear()
 
         self.current_level = Level(width=self.width, height=self.height)
+        self.current_level.addEntity(self.player)
         
         self.build_level()
     
@@ -32,8 +33,7 @@ class Engine():
         
 
     def draw(self) -> None:
-        for i in range(self.width):
-            for j in range(self.height):
-                cell = self.curlevel[i][j]
-                self.console.print(i, j, cell.tile, fg=cell.fg, bg=cell.bg)
-        self.console.print(self.player.x, self.player.y, "@")
+        for x in range(self.width):
+            for y in range(self.height):
+                tile, fg, bg = self.current_level.getTile(x, y)
+                self.console.print(x, y, tile, fg=fg, bg=bg)

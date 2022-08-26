@@ -34,7 +34,7 @@ def main() -> None:
                 context.convert_event(event)
                 print(event)
                 action: Optional[Any] = engine.eventHandler.dispatch(event)
-                engine.actionHandler.apply(action)
+                engine.actionHandler.apply(action, entity=engine.player, level=engine.current_level)
 
 if __name__ == "__main__":
     main()

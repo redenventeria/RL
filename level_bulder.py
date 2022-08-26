@@ -23,9 +23,14 @@ class BoxBuilder(Builder):
         self.h = h
 
     def build(self, level: Level, x_offset=0, y_offset=0):
+        i: int = 0
         for x in range(self.x, self.x + self.w):
-            level.add_entity(Wall(x=x, y=self.y))
-            level.add_entity(Wall(x=x, y=self.y + self.h))
-        for y in range(self.y + 1, self.y + self.y + self.h - 1):
-            level.add_entity(Wall(x=self.x, y=y))
-            level.add_entity(Wall(x=self.x + self.w, y=y))
+            i+=2
+            level.addEntity(Wall(x=x, y=self.y, fg=(100, 150, 20)))
+            level.addEntity(Wall(x=x, y=self.y + self.h - 1, fg=(100, 150, 20)))
+        for y in range(self.y + 1, self.y + self.h - 1):
+            i+=2
+            level.addEntity(Wall(x=self.x, y=y))
+            level.addEntity(Wall(x=self.x + self.w - 1, y=y))
+        print(i)
+    

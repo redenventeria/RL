@@ -1,6 +1,9 @@
 
 from typing import TYPE_CHECKING
 
+from entity import Entity
+from level import Level
+
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -8,7 +11,10 @@ if TYPE_CHECKING:
 
 class Action:
 
-    def apply(self):
+    def __init__(self):
+        pass
+
+    def apply(self, **kwargs):
         pass
 
     
@@ -19,16 +25,14 @@ class MovementAction(Action):
         self.dx: int = dx
         self.dy: int = dy
     
-    def apply(self, engine: "Engine"):
-        new_x = engine.player.x + self.dx
-        new_y = engine.player.y + self.dy
-        if self.__isCellExists(new_x, new_y, engine):
-            if not engine.current_level.navGrid[new_x][new_y].is_solid:
-                engine.player.x = new_x
-                engine.player.y = new_y
-    
-    def __isCellExists(self, new_x, new_y, engine: "Engine"):
-        return 0 <= new_x < engine.width and 0 <= new_y < engine.height
+    def apply(self, **kwargs):
+
+        level = kwargs["level"]
+        entity = kwargs["entity"]
+
+        new_x = entity.x + self.dx
+        new_y = entity.y + self.dy
+        level.moveEntity(entity, new_x, new_y)
 
 
 class EscapeAction(Action):
@@ -36,7 +40,7 @@ class EscapeAction(Action):
     def __init__(self) -> None:
         super().__init__()
     
-    def apply(self, engine: "Engine"):
+    def apply(self, **kwargs):
         raise SystemExit()
 
 
@@ -46,6 +50,6 @@ class ActionHandler:
     def __init__(self, game):
         self.game = game
     
-    def apply(self, action):
+    def apply(self, action: Action, **kwargs):
         if action != None:
-            action.apply(self.game)
+            action.apply(**kwargs)

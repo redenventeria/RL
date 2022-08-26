@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Optional
 
-class Entity():
+
+class Entity:
     def __init__( self,
         *,
         is_solid: bool,
@@ -10,6 +11,7 @@ class Entity():
         fg: Optional[tuple] = (180, 180, 180),
         x: int,
         y: int,
+        priority: int = 0
     ):
         self.is_solid = is_solid
         self.is_blocking_fov = is_blocking_fov
@@ -18,6 +20,10 @@ class Entity():
         self.fg = fg
         self.x = x
         self.y = y
+        self.priority = priority
+    
+    def getChar(self):
+        return (self.tile, self.bg, self.fg)
 
 
 
@@ -40,5 +46,5 @@ class Item(Entity):
 
 
 class Wall(Entity):
-    def __init__(self, *, x: int, y: int):
-        super().__init__(is_solid=True, char='#', x=x, y=y)
+    def __init__(self, *, x: int, y: int, bg=None, fg=None):
+        super().__init__(is_solid=True, char='#', x=x, y=y, bg=bg, fg=fg)
