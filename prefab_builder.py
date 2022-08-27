@@ -1,10 +1,9 @@
-
-
 from level import Level
 from entity import Wall
 
 
-class Builder:
+
+class PrefabBuilder:
 
     def __init__(self, **kwargs):
         pass
@@ -12,8 +11,7 @@ class Builder:
     def build(self, **kwargs):
         pass
 
-
-class BoxBuilder(Builder):
+class BoxBuilder(PrefabBuilder):
 
     def __init__(self, *, x: int, y: int, w: int, h: int, **kwargs):
         super().__init__(**kwargs)

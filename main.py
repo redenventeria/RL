@@ -8,6 +8,7 @@ from tcod import Console
 from tcod.context import new as new_context
 
 from engine import Engine
+from tcod_render import tcodRender
 
 def main() -> None:
 
@@ -17,24 +18,19 @@ def main() -> None:
         "resources/Alloy_curses_12x12.png", 16, 16, CHARMAP_CP437,
     )
 
-    engine = Engine(Console(WIDTH, HEIGHT))
-
     with new_context(
         columns=WIDTH,
         rows=HEIGHT,
         tileset=tileset
     ) as context:
-        while True:
-            
-            engine.draw()
 
-            context.present(engine.console)
+        console: Console = Console(WIDTH, HEIGHT)
+        engine = Engine()
+        render = tcodRender(context, console, engine)
+        
+        engine.setRender(render)
 
-            for event in wait():
-                context.convert_event(event)
-                print(event)
-                action: Optional[Any] = engine.eventHandler.dispatch(event)
-                engine.actionHandler.apply(action, entity=engine.player, level=engine.current_level)
+        engine.mainloop()
 
 if __name__ == "__main__":
     main()
