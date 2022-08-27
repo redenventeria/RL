@@ -30,16 +30,7 @@ def main() -> None:
         
         engine.setRender(render)
 
-        while True:
-            
-            engine.display()
-
-            context.present(console)
-
-            for event in wait():
-                context.convert_event(event)
-                print(event)
-                engine.handleEvent(event)
+        engine.mainloop()
 
 if __name__ == "__main__":
     main()

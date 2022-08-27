@@ -30,3 +30,5 @@ class tcodRender:
                     y + self.render_pos[1],
                     tile, fg=fg, bg=bg
                 )
+        
+        self.context.present(self.console)

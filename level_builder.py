@@ -1,7 +1,13 @@
 
-from entity import Entity
+import random
+from typing import TYPE_CHECKING
+from ai import randomAI
+from entity import AIEntity, Entity
 from level import Level
 from prefab_builder import BoxBuilder
+
+if TYPE_CHECKING:
+    from engine import Engine
 
 class LevelBuilder:
 
@@ -19,20 +25,27 @@ class TestingBox(LevelBuilder):
         self.width = width
         self.height = height
     
-    def build(self, **kwargs) -> Level:
+    def build(self, *, engine: "Engine", **kwargs) -> Level:
         level = Level(width=self.width, height=self.height)
         # self.builder.build(level)
-
-        test_monster = Entity(
-            is_solid=True,
-            is_blocking_fov=False,
-            char="M",
-            fg=(30, 230, 20),
-            x=12,
-            y=11,
-            priority=10
-        )
-
-        level.addEntity(test_monster)
+        for i in range(5000):
+            x=random.randint(0, engine.width - 1)
+            y=random.randint(0, engine.height - 1)
+            bg = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            fg = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            test_monster = AIEntity(
+                is_solid=True,
+                is_blocking_fov=False,
+                char=random.choice("qwertyuiopasdfghjklzxcvbnm"),
+                fg=fg,
+                bg=bg,
+                x=x,
+                y=y,
+                priority=10,
+                ai=randomAI(),
+                engine=engine,
+                actionPoints=100
+            )
+            level.addEntity(test_monster)
 
         return level
