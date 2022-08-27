@@ -35,16 +35,6 @@ class Empty(Entity):
     if TYPE_CHECKING:
         def append(self, entity):
             raise NotImplementedError()
-
-
-
-class Item(Entity):
-    
-    def __init__(self):
-        pass
-
-
-
 class Wall(Entity):
-    def __init__(self, *, x: int, y: int, bg=None, fg=None):
-        super().__init__(is_solid=True, char='#', x=x, y=y, bg=bg, fg=fg)
+    def __init__(self, *, x: int, y: int, bg=None, fg=None, char: str = "#"):
+        super().__init__(is_solid=True, char=char, x=x, y=y, bg=bg, fg=fg)
