@@ -1,9 +1,8 @@
-from pydoc import plain
 from typing import Set
 from tcod_event_handler import tcodEventReceiver
 from action_handler import ActionHandler
 from entity import AIEntity, PlayerEntity
-from level_builder import TestingBox
+from level_builder import BSPLevelBuilder, TestingBox
 from tcod_render import tcodRender
 from timeflow import TimeFlow
 
@@ -20,7 +19,7 @@ class Engine():
         self.actionHandler = ActionHandler(self)
         self.eventHandler = tcodEventReceiver(self, self.actionHandler)
 
-        self.initialLevelBuilder = TestingBox(width=self.width, height=self.height)
+        self.initialLevelBuilder = BSPLevelBuilder(width=self.width, height=self.height)
         self.currentLevel = self.initialLevelBuilder.build(engine=self)
         self.currentLevel.addEntity(self.player)
 
@@ -39,5 +38,6 @@ class Engine():
                     action = self.eventHandler.handleEvent(event)
                     if action != None:
                         action.apply(engine=self, entity=self.player)
-                        self.isPlayerTurn = False
+                        if action.APCost > 0:
+                            self.isPlayerTurn = False
             self.timeFlow.makeAITurns()

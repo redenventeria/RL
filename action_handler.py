@@ -2,15 +2,13 @@
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from entity import Entity
-
-
-if TYPE_CHECKING:
     from engine import Engine
 
 
 class Action:
 
     def __init__(self, **kwargs):
+        self.APCost = 100
         pass
 
     def apply(self, engine, entity, **kwargs):
@@ -18,6 +16,7 @@ class Action:
 
 class IdleAction(Action):
     def __init__(self, **kwargs):
+        self.APCost = 100
         pass
 
     def apply(self, engine, entity, **kwargs):
@@ -27,6 +26,7 @@ class IdleAction(Action):
 class MovementAction(Action):
     def __init__(self, dx: int, dy: int, **kwargs) -> None:
         super().__init__()
+        self.APCost = 100
         self.dx: int = dx
         self.dy: int = dy
     

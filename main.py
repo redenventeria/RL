@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from typing import Optional, Any
-
 from tcod.tileset import load_tilesheet, Tileset, CHARMAP_CP437
 from tcod.event import wait
 from tcod import Console

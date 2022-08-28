@@ -1,3 +1,4 @@
+from ctypes.wintypes import HPALETTE
 from typing import TYPE_CHECKING, Optional
 
 from ai import AI
@@ -47,14 +48,25 @@ class Wall(Entity):
 
 class PlayerEntity(Entity):
 
-    def __init__(self, *, x, y, **kwargs):
+    def __init__(self, *, x, y, hp = 30, attack = 6, **kwargs):
         super().__init__(is_solid=True, char="@", x=x, y=y)
+        self.hp = hp
+        self.attack = attack
+
 
 
 class AIEntity(Entity):
 
-    def __init__(self, *, engine: "Engine", x, y, ai: AI, actionPoints: int, **kwargs):
+    def __init__(self, *,
+        engine: "Engine",
+        x: int,
+        y: int,
+        ai: AI,
+        actionPoints: int,
+        hp: int,
+        attack: int,
+        **kwargs
+    ):
         super().__init__(x=x, y=y, **kwargs)
         self.ai = ai
         engine.AIEntities.add(self)
-        
