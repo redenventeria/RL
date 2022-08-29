@@ -1,16 +1,16 @@
 
 from typing import TYPE_CHECKING
+
+from util import Vector2D
 if TYPE_CHECKING:
     from entity import Entity
-
-
-if TYPE_CHECKING:
     from engine import Engine
 
 
 class Action:
 
     def __init__(self, **kwargs):
+        self.APCost = 100
         pass
 
     def apply(self, engine, entity, **kwargs):
@@ -18,6 +18,7 @@ class Action:
 
 class IdleAction(Action):
     def __init__(self, **kwargs):
+        self.APCost = 100
         pass
 
     def apply(self, engine, entity, **kwargs):
@@ -25,16 +26,15 @@ class IdleAction(Action):
     
 
 class MovementAction(Action):
-    def __init__(self, dx: int, dy: int, **kwargs) -> None:
+    def __init__(self, direction: Vector2D, **kwargs) -> None:
         super().__init__()
-        self.dx: int = dx
-        self.dy: int = dy
+        self.APCost = 100
+        self.direction = direction
     
     def apply(self, *, engine: "Engine", entity: "Entity", **kwargs):
 
-        new_x = entity.x + self.dx
-        new_y = entity.y + self.dy
-        engine.currentLevel.moveEntity(entity, new_x, new_y)
+        newPosition = entity.position + self.direction
+        engine.currentLevel.moveEntity(entity, newPosition)
 
 
 class EscapeAction(Action):
