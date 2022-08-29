@@ -4,9 +4,9 @@ from re import X
 from secrets import choice
 from typing import TYPE_CHECKING, List, Set, Tuple
 from ai import randomAI
-from entity import AIEntity
+from entity import AIEntity, Wall
 from level import Level
-from prefab_builder import BoxBuilder
+from prefab_builder import RoomBuilder, Filler
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -24,7 +24,7 @@ class LevelBuilder:
 
 class TestingBox(LevelBuilder):
     def __init__(self, width: int, height: int, **kwargs):
-        self.builder = BoxBuilder(x=10, y=10, w=5, h=5)
+        self.builder = RoomBuilder(x=10, y=10, w=5, h=5)
     
     def build(self, *, engine: "Engine", **kwargs) -> Level:
         level = Level(width=self.width, height=self.height)
@@ -66,6 +66,10 @@ class BSPLevelBuilder(LevelBuilder):
     
     def build(self, **kwargs):
 
+        filler = Filler(x=0, y=0, w=self.width, h=self.height)
+        level = Level(width=self.width, height=self.height)
+        filler.build(level, lambda x, y: Wall(x=x, y=y, bg=(30, 30, 30), fg=(30, 30, 30)))
+
         self.rectangles: List[Rectangle] = list()
         self.rectangles.append(Rectangle(1, 1, self.width - 2, self.height - 2))
 
@@ -77,8 +81,6 @@ class BSPLevelBuilder(LevelBuilder):
                 for rect in subRectangles:
                     self.rectangles.append(rect)
             
-
-        level = Level(width=self.width, height=self.height)
         for rect in self.rectangles:
 
             """builder_debug = BoxBuilder(x=rect.x, y=rect.y, w=rect.width, h=rect.height)
@@ -89,7 +91,7 @@ class BSPLevelBuilder(LevelBuilder):
                 randy = random.randint(rect.y, rect.y+rect.height - 5)
                 randwidth = random.randint(4, rect.x + rect.width - randx)
                 randheight = random.randint(4, rect.y + rect.height - randy)
-                builder = BoxBuilder(x=randx, y=randy, w=randwidth, h=randheight)
+                builder = RoomBuilder(x=randx, y=randy, w=randwidth, h=randheight)
                 builder.build(level)
         
         return level

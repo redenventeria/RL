@@ -48,10 +48,13 @@ class Level:
         x = entity.x
         y = entity.y
         cell = self.navGrid[x][y]
-        if isinstance(self.entities[x, y], Empty):
-            self.entities[x, y] = [entity]
+        if isinstance(entity, Empty):
+            self.entities[x, y] = entity
         else:
-            self.entities[x, y].append(entity)
+            if isinstance(self.entities[x, y], Empty):
+                self.entities[x, y] = [entity]
+            else:
+                self.entities[x, y].append(entity)
         
         self.updateNavCell(x, y)
     

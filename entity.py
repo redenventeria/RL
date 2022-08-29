@@ -29,7 +29,7 @@ class Entity:
         self.priority = priority
     
     def getChar(self):
-        return (self.tile, self.bg, self.fg)
+        return (self.tile, self.fg, self.bg)
 
 
 

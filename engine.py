@@ -1,7 +1,7 @@
 from typing import Set
 from tcod_event_handler import tcodEventReceiver
 from action_handler import ActionHandler
-from entity import AIEntity, PlayerEntity
+from entity import AIEntity, Empty, PlayerEntity
 from level_builder import BSPLevelBuilder, TestingBox
 from tcod_render import tcodRender
 from timeflow import TimeFlow
@@ -21,6 +21,11 @@ class Engine():
 
         self.initialLevelBuilder = BSPLevelBuilder(width=self.width, height=self.height)
         self.currentLevel = self.initialLevelBuilder.build(engine=self)
+        for x in range(self.currentLevel.width):
+            for y in range(self.currentLevel.height):
+                if isinstance(self.currentLevel.entities[x, y], Empty):
+                    self.player.x = x
+                    self.player.y = y
         self.currentLevel.addEntity(self.player)
 
         self.timeFlow = TimeFlow(self)
