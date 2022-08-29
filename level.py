@@ -1,7 +1,8 @@
-from turtle import update
 import numpy as np
 from entity import Empty, Entity
 from typing import List, Tuple, TypeVar, Union
+
+from util import Rectangle, Vector2D
 
 Cell = np.dtype([
     ("solid", np.bool8),
@@ -13,89 +14,83 @@ EntityList = Union[Empty, List[Entity]]
 
 class Level:
 
-    def __init__(self, *, width: int, height: int):
+    def __init__(self, dimensions: Vector2D):
 
-        self.width = width
-        self.height = height
+        self.limits = Rectangle(Vector2D(0, 0), dimensions)
 
-        self.entities: dict[Tuple[int, int], EntityList] = {}
-
-        for x in range(self.width):
-            for y in range(self.height):
-                self.entities[(x, y)] = Empty(x=x, y=y)
+        self.entities: dict[Vector2D, EntityList] = {}
+        dimensions = self.limits.dimensions
+        for x in range(dimensions.x):
+            for y in range(dimensions.y):
+                position = Vector2D(x, y)
+                self.entities[position] = Empty(position)
 
         self.navGrid = np.full(
-            (width, height),
+            dimensions,
             fill_value=False,
             dtype=Cell,
         )
     
-    def updateNavCell(self, x, y):
+    def updateNavCell(self, position: Vector2D):
 
-        cell = self.navGrid[x, y]
+        cell = self.navGrid[position[0], position[1]]
 
-        if isinstance(self.entities[x, y], Empty):
+        if isinstance(self.entities[position], Empty):
             cell["solid"] = False
             cell["blocking_fov"] = False
         else:
             cell["solid"] = False
             cell["blocking_fov"] = False
-            for e in self.entities[x, y]:
+            for e in self.entities[position]:
                 cell["solid"] = cell["solid"] or e.is_solid
                 cell["blocking_fov"] = cell["blocking_fov"] or e.is_blocking_fov
     
     def addEntity(self, entity: Entity):
-        x = entity.x
-        y = entity.y
-        cell = self.navGrid[x][y]
+        position = entity.position
         if isinstance(entity, Empty):
-            self.entities[x, y] = entity
+            self.entities[position] = entity
         else:
-            if isinstance(self.entities[x, y], Empty):
-                self.entities[x, y] = [entity]
+            print(type(position))
+            if isinstance(self.entities[position], Empty):
+                self.entities[position] = [entity]
             else:
-                self.entities[x, y].append(entity)
+                self.entities[position].append(entity)
         
-        self.updateNavCell(x, y)
+        self.updateNavCell(position.asTuple())
     
-    def deleteEntity(self, entity):
-        x = entity.x
-        y = entity.y
+    def deleteEntity(self, entity: Entity):
+        position = entity.position
         instance_index: int
-        for i, e in enumerate(self.entities[x, y]):
+        for i, e in enumerate(self.entities[position]):
             if e is entity:
                 instance_index = i
-        del self.entities[x, y][instance_index]
+        del self.entities[position][instance_index]
 
-        if len(self.entities[x, y]) == 0:
-            self.entities[x, y] = Empty(x=x, y=y)
+        if len(self.entities[position]) == 0:
+            self.entities[position] = Empty(position)
         
-        self.updateNavCell(x, y)
+        self.updateNavCell(position)
     
-    def moveEntity(self, entity: Entity, new_x, new_y):
-        if self.__isCellExists(new_x, new_y):
-            if not self.navGrid[new_x][new_y]["solid"]:
+    def moveEntity(self, entity: Entity, newPosition: Tuple[int, int]):
+        if self.limits.contains(newPosition):
+            if not self.navGrid[newPosition[0], newPosition[1]]["solid"]:
                 self.deleteEntity(entity)
 
-                entity.x = new_x
-                entity.y = new_y
+                entity.position = newPosition
 
-                self.addEntity(entity=entity)
+                self.addEntity(entity)
         
     
-    def getTile(self, x, y):
-        entities = self.entities[x, y]
+    def getTile(self, position):
+        entities = self.entities[position]
         if isinstance(entities, Empty):
-            return entities.getChar()
+            return entities.getTile()
         else:
             most_important_entity = entities[0]
             for e in entities:
                 if e.priority > most_important_entity.priority:
                     most_important_entity = e
-            return most_important_entity.getChar()
-    
-    def __isCellExists(self, x: int, y: int):
-        return 0 <= x < self.width and 0 <= y < self.height
+            return most_important_entity.getTile()
 
 
 

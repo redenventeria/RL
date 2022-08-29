@@ -11,6 +11,8 @@ from action_handler import (
 
 from typing import TYPE_CHECKING, Optional
 
+from util import Vector2D
+
 if TYPE_CHECKING:
     from engine import Engine
 
@@ -40,14 +42,14 @@ class tcodEventHandler(EventDispatch[Action]):
         key = event.sym
 
         actions: dict[int, tuple[int, int]] = {
-            K_DOWN : (0, 1),
-            K_UP : (0, -1),
-            K_LEFT : (-1, 0),
-            K_RIGHT : (1, 0),
+            K_DOWN : Vector2D(0, 1),
+            K_UP : Vector2D(0, -1),
+            K_LEFT : Vector2D(-1, 0),
+            K_RIGHT : Vector2D(1, 0),
         }
 
         if key in actions:
-            action = MovementAction(*actions[key])
+            action = MovementAction(actions[key])
         
         return action
 

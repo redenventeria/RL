@@ -1,28 +1,26 @@
 
 import random
-from re import X
-from secrets import choice
 from typing import TYPE_CHECKING, List, Set, Tuple
 from ai import randomAI
 from entity import AIEntity, Wall
 from level import Level
 from prefab_builder import RoomBuilder, Filler
+from util import Tile, Vector2D, Rectangle
 
 if TYPE_CHECKING:
     from engine import Engine
 
 class LevelBuilder:
 
-    def __init__(self, width: int, height: int, **kwargs):
-        self.width = width
-        self.height = height
+    def __init__(self, dimensions: Vector2D, **kwargs):
+        self.dimensions = dimensions
 
     def build(self, **kwargs):
         raise NotImplementedError()
 
 
 
-class TestingBox(LevelBuilder):
+"""class TestingBox(LevelBuilder):
     def __init__(self, width: int, height: int, **kwargs):
         self.builder = RoomBuilder(x=10, y=10, w=5, h=5)
     
@@ -51,31 +49,29 @@ class TestingBox(LevelBuilder):
             )
             level.addEntity(test_monster)
 
-        return level
+        return level"""
 
-class Rectangle:
-    def __init__(self, x, y, w, h):
-        self.x = x
-        self.y = y
-        self.width = w
-        self.height = h
 class BSPLevelBuilder(LevelBuilder):
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
     
     def build(self, **kwargs):
 
-        filler = Filler(x=0, y=0, w=self.width, h=self.height)
-        level = Level(width=self.width, height=self.height)
-        filler.build(level, lambda x, y: Wall(x=x, y=y, bg=(30, 30, 30), fg=(30, 30, 30)))
+        filler = Filler(Rectangle(Vector2D(0, 0), self.dimensions))
+        level = Level(self.dimensions)
+        filler.build(level, 
+            lambda position: 
+                Wall(position, Tile(" ", (30, 30, 30), (30, 30, 30)))
+        )
 
         self.rectangles: List[Rectangle] = list()
-        self.rectangles.append(Rectangle(1, 1, self.width - 2, self.height - 2))
+        #self.rectangles.append(Rectangle(1, 1, self.width - 2, self.height - 2))
+        self.rectangles.append(Rectangle(Vector2D(1, 1), self.dimensions - Vector2D(2, 2)))
 
-        for i in range(8):
+        for i in range(4):
             rect: Rectangle = random.choice(self.rectangles)
-            if (rect.width - 4)*(rect.height - 4) // 4 > 16:
+            if (rect.dimensions.x - 4)*(rect.dimensions.y - 4) // 4 > 16:
                 subRectangles = self.getSubRectangles(rect)
                 self.rectangles.remove(rect)
                 for rect in subRectangles:
@@ -83,32 +79,36 @@ class BSPLevelBuilder(LevelBuilder):
             
         for rect in self.rectangles:
 
-            """builder_debug = BoxBuilder(x=rect.x, y=rect.y, w=rect.width, h=rect.height)
-            builder_debug.build(level)"""
-
-            if random.uniform(0, 1) > 0.1:
-                randx = random.randint(rect.x, rect.x+rect.width - 5)
+            if random.uniform(0, 1) > 0:
+                """randx = random.randint(rect.x, rect.x+rect.width - 5)
                 randy = random.randint(rect.y, rect.y+rect.height - 5)
                 randwidth = random.randint(4, rect.x + rect.width - randx)
-                randheight = random.randint(4, rect.y + rect.height - randy)
-                builder = RoomBuilder(x=randx, y=randy, w=randwidth, h=randheight)
+                randheight = random.randint(4, rect.y + rect.height - randy)"""
+                x1, y1 = rect.position
+                x2, y2 = rect.getOtherPoint()
+                position = Vector2D.getRandom(x1, x2 - 5, y1, y2 - 5)
+                dimensions = Vector2D.getRandom(4, x2 - position.x, 4, y2 -position.y)
+                randomRectangle = Rectangle(position, dimensions)
+                builder = RoomBuilder(randomRectangle)
                 builder.build(level)
         
         return level
     
     def getSubRectangles(self, rect: Rectangle) -> List[Rectangle]:
-        x = rect.x + 1
-        y = rect.y + 1
-        width = rect.width - 2
-        height = rect.height - 2
-        hwidth = width // 2
-        hheight = height // 2
+        position = rect.position + Vector2D(1, 1)
+        dimensions = rect.dimensions - Vector2D(2, 2)
+        halfDimensions = dimensions // 2
+
+        positionLeftUp = position + Vector2D(0, 0)
+        positionRightUp = position + Vector2D(halfDimensions.x + 1, 0)
+        positionLeftDown = position + Vector2D(0, halfDimensions.y + 1)
+        positionRightDown = position + Vector2D(halfDimensions.x + 1, halfDimensions.y + 1)
 
         subRectangles: List[Rectangle] = []
-        subRectangles.append(Rectangle(x, y, hwidth, hheight))
-        subRectangles.append(Rectangle(x + hwidth + 1, y, hwidth, hheight))
-        subRectangles.append(Rectangle(x, y + hheight + 1, hwidth, hheight))
-        subRectangles.append(Rectangle(x + hwidth + 1, y + hheight + 1, hwidth, hheight))
+        subRectangles.append(Rectangle(positionLeftUp, halfDimensions))
+        subRectangles.append(Rectangle(positionLeftDown, halfDimensions))
+        subRectangles.append(Rectangle(positionRightUp, halfDimensions))
+        subRectangles.append(Rectangle(positionRightDown, halfDimensions))
 
         return subRectangles
 

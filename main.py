@@ -8,22 +8,23 @@ from tcod.context import new as new_context
 
 from engine import Engine
 from tcod_render import tcodRender
+from util import Vector2D
 
 def main() -> None:
 
-    WIDTH, HEIGHT = 60, 45
+    consoleDimensions = Vector2D(60, 45)
 
     tileset: Tileset = load_tilesheet(
         "resources/Alloy_curses_12x12.png", 16, 16, CHARMAP_CP437,
     )
 
     with new_context(
-        columns=WIDTH,
-        rows=HEIGHT,
+        columns=consoleDimensions.x,
+        rows=consoleDimensions.y,
         tileset=tileset
     ) as context:
 
-        console: Console = Console(WIDTH, HEIGHT)
+        console: Console = Console(consoleDimensions.x, consoleDimensions.y)
         engine = Engine()
         render = tcodRender(context, console, engine)
         

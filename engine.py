@@ -2,30 +2,32 @@ from typing import Set
 from tcod_event_handler import tcodEventReceiver
 from action_handler import ActionHandler
 from entity import AIEntity, Empty, PlayerEntity
-from level_builder import BSPLevelBuilder, TestingBox
+from level_builder import BSPLevelBuilder
 from tcod_render import tcodRender
-from timeflow import TimeFlow
+from time_flow import TimeFlow
+from util import Tile, Vector2D
 
 
 class Engine():
     def __init__(self) -> None:
-        self.width = 60
-        self.height = 45
+        self.dimensions = Vector2D(60, 45)
 
-        self.player = PlayerEntity(is_solid=True, char="@", x=44, y=30)
+        self.player = PlayerEntity(Tile("@", None, None), Vector2D(30, 30))
 
         self.AIEntities: Set[AIEntity] = set()
 
         self.actionHandler = ActionHandler(self)
         self.eventHandler = tcodEventReceiver(self, self.actionHandler)
 
-        self.initialLevelBuilder = BSPLevelBuilder(width=self.width, height=self.height)
+        self.initialLevelBuilder = BSPLevelBuilder(self.dimensions)
         self.currentLevel = self.initialLevelBuilder.build(engine=self)
-        for x in range(self.currentLevel.width):
-            for y in range(self.currentLevel.height):
+
+        #TODO Delegate player placement code to level builders
+
+        for x in range(self.currentLevel.limits.dimensions.x):
+            for y in range(self.currentLevel.limits.dimensions.y):
                 if isinstance(self.currentLevel.entities[x, y], Empty):
-                    self.player.x = x
-                    self.player.y = y
+                    self.player.position = Vector2D(x, y)
         self.currentLevel.addEntity(self.player)
 
         self.timeFlow = TimeFlow(self)
