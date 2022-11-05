@@ -20,7 +20,7 @@ class LevelBuilder:
 
 
 
-"""class TestingBox(LevelBuilder):
+class TestingBox(LevelBuilder):
     def __init__(self, width: int, height: int, **kwargs):
         self.builder = RoomBuilder(x=10, y=10, w=5, h=5)
     
@@ -49,7 +49,7 @@ class LevelBuilder:
             )
             level.addEntity(test_monster)
 
-        return level"""
+        return level
 
 class BSPLevelBuilder(LevelBuilder):
 
@@ -91,6 +91,7 @@ class BSPLevelBuilder(LevelBuilder):
                 randomRectangle = Rectangle(position, dimensions)
                 builder = RoomBuilder(randomRectangle)
                 builder.build(level)
+    
         
         return level
     
