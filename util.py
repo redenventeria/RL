@@ -16,7 +16,9 @@ class Vector2D:
     
     @classmethod
     def fromIterable(self, coordinates: Iterable):
-        self.x, self.y = coordinates
+        answer = Vector2D
+        answer.x, answer.y = coordinates
+        return answer
     
     @classmethod
     def getRandom(self, xMin, xMax, yMin, yMax):
@@ -43,12 +45,23 @@ class Vector2D:
     
     def __eq__(self, other):
         try:
-            return self.x == other.x and self.y == self.y
+            return self.x == other.x and self.y == other.y
         except AttributeError:
-            return self.x == other[0] and self.x == other[0] and len(other) == 2
+            return self.x == other[0] and self.y == other[1] and len(other) == 2
+    
+    def __lt__(self, other):
+        if self.x == other.x:
+            return self.y < self.y
+        return self.x < self.x
     
     def __hash__(self):
         return (self.x, self.y).__hash__()
+    
+    def __str__(self):
+        return f"{self.x} {self.y}"
+    
+    def __repr__(self):
+        return f"Vector2d({self.x} {self.y})"
 
 
 
@@ -106,3 +119,6 @@ class Tile:
         yield self.char
         yield self.bg
         yield self.fg
+
+
+print(Vector2D.fromIterable((1, 6)))
